@@ -319,7 +319,7 @@ void Listener::run() {
 
 void Listener::runThreaded() {
   shutdownFd.bind(poller);
-  acceptThread = std::thread([=]() { this->run(); });
+  acceptThread = std::thread([=, this]() { this->run(); });
 }
 
 void Listener::shutdown() {
@@ -340,7 +340,7 @@ Listener::requestLoad(const Listener::Load &old) {
 
   return Async::whenAll(std::begin(loads), std::end(loads))
       .then(
-          [=](const std::vector<rusage> &usages) {
+          [=, this](const std::vector<rusage> &usages) {
             Load res;
             res.raw = usages;
 

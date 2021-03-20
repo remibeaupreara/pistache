@@ -42,7 +42,7 @@ public:
     // Always enqueue reponses for sending. Giving preference to consumer
     // context means chunked responses could be sent out of order.
     return Async::Promise<ssize_t>(
-        [=](Async::Deferred<ssize_t> deferred) mutable {
+        [=, this](Async::Deferred<ssize_t> deferred) mutable {
           BufferHolder holder{buffer};
           WriteEntry write(std::move(deferred), std::move(holder), fd, flags);
           writesQueue.push(std::move(write));
@@ -50,7 +50,7 @@ public:
   }
 
   Async::Promise<rusage> load() {
-    return Async::Promise<rusage>([=](Async::Deferred<rusage> deferred) {
+    return Async::Promise<rusage>([=, this](Async::Deferred<rusage> deferred) {
       loadRequest_ = std::move(deferred);
       notifier.notify();
     });

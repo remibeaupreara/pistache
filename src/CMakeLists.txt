@@ -20,6 +20,9 @@ set(PISTACHE_INCLUDE
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
     )
 
+
+message("WAZZUP")
+
 target_include_directories(pistache PUBLIC ${PISTACHE_INCLUDE})
 
 set(include_install_dir ${CMAKE_INSTALL_INCLUDEDIR})

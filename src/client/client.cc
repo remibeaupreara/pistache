@@ -231,7 +231,7 @@ Async::Promise<void>
 Transport::asyncConnect(std::shared_ptr<Connection> connection,
                         const struct sockaddr *address, socklen_t addr_len) {
   return Async::Promise<void>(
-      [=](Async::Resolver &resolve, Async::Rejection &reject) {
+      [=, this](Async::Resolver &resolve, Async::Rejection &reject) {
         ConnectionEntry entry(std::move(resolve), std::move(reject), connection,
                               address, addr_len);
         connectionsQueue.push(std::move(entry));
@@ -459,7 +459,7 @@ void Connection::connect(const Address &addr) {
     transport_
         ->asyncConnect(shared_from_this(), addr->ai_addr, addr->ai_addrlen)
         .then(
-            [=]() {
+            [=, this]() {
               socklen_t len = sizeof(saddr);
               getsockname(sfd, (struct sockaddr *)&saddr, &len);
               connectionState_.store(Connected);
@@ -588,7 +588,7 @@ void Connection::handleTimeout() {
 Async::Promise<Response> Connection::perform(const Http::Request &request,
                                              Connection::OnDone onDone) {
   return Async::Promise<Response>(
-      [=](Async::Resolver &resolve, Async::Rejection &reject) {
+      [=, this](Async::Resolver &resolve, Async::Rejection &reject) {
         performImpl(request, std::move(resolve), std::move(reject),
                     std::move(onDone));
       });
@@ -597,7 +597,7 @@ Async::Promise<Response> Connection::perform(const Http::Request &request,
 Async::Promise<Response> Connection::asyncPerform(const Http::Request &request,
                                                   Connection::OnDone onDone) {
   return Async::Promise<Response>(
-      [=](Async::Resolver &resolve, Async::Rejection &reject) {
+      [=, this](Async::Resolver &resolve, Async::Rejection &reject) {
         requestsQueue.push(RequestData(std::move(resolve), std::move(reject),
                                        request, std::move(onDone)));
       });
